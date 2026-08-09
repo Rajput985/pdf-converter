@@ -1,251 +1,474 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PDF Converter</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Converter</title>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+*{box-sizing:border-box}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      color: #222;
-    }
+body{
+    margin:0;
+    font-family:Arial,"Noto Sans Arabic",sans-serif;
+    background:linear-gradient(135deg,#eef2ff,#f8fafc);
+    color:#172033;
+    min-height:100vh;
+}
 
-    .container {
-      max-width: 600px;
-      margin: auto;
-      padding: 25px 16px;
-    }
+.container{
+    width:92%;
+    max-width:700px;
+    margin:30px auto;
+}
 
-    .card {
-      background: white;
-      padding: 25px;
-      border-radius: 18px;
-      box-shadow: 0 5px 25px rgba(0,0,0,0.08);
-      text-align: center;
-    }
+.card{
+    background:white;
+    border-radius:25px;
+    padding:25px;
+    box-shadow:0 15px 45px rgba(0,0,0,.10);
+}
 
-    h1 {
-      margin-top: 0;
-      font-size: 30px;
-    }
+.top{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:10px;
+}
 
-    .subtitle {
-      color: #666;
-      margin-bottom: 25px;
-    }
+select{
+    border:1px solid #ddd;
+    border-radius:12px;
+    padding:10px 14px;
+    background:white;
+    font-size:15px;
+}
 
-    input[type="file"] {
-      width: 100%;
-      padding: 15px;
-      border: 2px dashed #bbb;
-      border-radius: 12px;
-      background: #fafafa;
-      margin-bottom: 20px;
-    }
+h1{
+    text-align:center;
+    margin:10px 0;
+    font-size:36px;
+}
 
-    button {
-      width: 100%;
-      padding: 15px;
-      border: none;
-      border-radius: 12px;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-      background: #2563eb;
-      color: white;
-      margin-top: 10px;
-    }
+.subtitle{
+    text-align:center;
+    color:#667085;
+    font-size:17px;
+    margin-bottom:25px;
+}
 
-    button:disabled {
-      background: #aaa;
-      cursor: not-allowed;
-    }
+.upload{
+    border:2px dashed #aab4c4;
+    border-radius:20px;
+    padding:30px 15px;
+    text-align:center;
+    cursor:pointer;
+    background:#fafbff;
+}
 
-    #preview {
-      margin-top: 20px;
-    }
+.upload:hover{
+    background:#f3f6ff;
+}
 
-    .preview-img {
-      width: 100%;
-      max-height: 300px;
-      object-fit: contain;
-      border-radius: 10px;
-      margin-top: 10px;
-      border: 1px solid #ddd;
-    }
+.upload-icon{
+    font-size:45px;
+    margin-bottom:10px;
+}
 
-    .success {
-      margin-top: 15px;
-      color: #16803c;
-      font-weight: bold;
-    }
-  </style>
+input[type=file]{
+    display:none;
+}
+
+.choose{
+    display:inline-block;
+    background:#4f46e5;
+    color:white;
+    padding:13px 22px;
+    border-radius:12px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#fileInfo{
+    margin-top:12px;
+    color:#667085;
+}
+
+.preview{
+    margin-top:20px;
+}
+
+.preview-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:#f8fafc;
+    padding:10px;
+    border-radius:14px;
+    margin-bottom:10px;
+}
+
+.preview-item img{
+    width:65px;
+    height:65px;
+    object-fit:cover;
+    border-radius:10px;
+}
+
+.preview-name{
+    flex:1;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+
+.remove{
+    border:0;
+    background:#fee2e2;
+    color:#b91c1c;
+    border-radius:9px;
+    padding:8px 11px;
+    cursor:pointer;
+}
+
+.convert{
+    width:100%;
+    margin-top:20px;
+    border:0;
+    border-radius:15px;
+    padding:17px;
+    background:#16a34a;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.convert:disabled{
+    background:#b7b7b7;
+    cursor:not-allowed;
+}
+
+.status{
+    text-align:center;
+    margin-top:15px;
+    color:#667085;
+}
+
+.footer{
+    text-align:center;
+    color:#7b8494;
+    margin-top:18px;
+    font-size:13px;
+}
+
+[dir="rtl"]{
+    text-align:right;
+}
+
+[dir="rtl"] .top{
+    justify-content:flex-start;
+}
+
+[dir="rtl"] h1,
+[dir="rtl"] .subtitle,
+[dir="rtl"] .status,
+[dir="rtl"] .footer{
+    text-align:center;
+}
+</style>
 </head>
 
 <body>
 
-  <div class="container">
-    <div class="card">
+<div class="container">
+<div class="card">
 
-      <h1>📄 PDF Converter</h1>
+<div class="top">
+<select id="language" onchange="changeLanguage()">
+<option value="en">English</option>
+<option value="ur">اردو</option>
+<option value="ar">العربية</option>
+</select>
+</div>
 
-      <p class="subtitle">
-        Convert your images into a PDF easily
-      </p>
+<h1>📄 <span id="title">PDF Converter</span></h1>
 
-      <input
-        type="file"
-        id="imageInput"
-        accept="image/*"
-        multiple
-      >
+<div class="subtitle" id="subtitle">
+Convert your images into a PDF easily
+</div>
 
-      <div id="preview"></div>
+<label class="upload">
+<div class="upload-icon">🖼️</div>
+<div>
+<span class="choose" id="chooseText">Choose Files</span>
+</div>
+<div id="fileInfo">No files selected</div>
+<input id="fileInput" type="file" accept="image/*" multiple>
+</label>
 
-      <button id="convertBtn" disabled>
-        Convert Images to PDF
-      </button>
+<div id="preview" class="preview"></div>
 
-      <div id="message"></div>
+<button id="convertBtn" class="convert" disabled onclick="makePDF()">
+Convert Images to PDF
+</button>
 
-    </div>
-  </div>
+<div id="status" class="status"></div>
 
-  <script>
-    const imageInput = document.getElementById("imageInput");
-    const convertBtn = document.getElementById("convertBtn");
-    const preview = document.getElementById("preview");
-    const message = document.getElementById("message");
+<div class="footer" id="privacy">
+Your files are processed in your browser. They are not uploaded to a server.
+</div>
 
-    let selectedImages = [];
+</div>
+</div>
 
-    imageInput.addEventListener("change", function () {
+<script>
+const translations = {
 
-      selectedImages = Array.from(this.files);
+en:{
+title:"PDF Converter",
+subtitle:"Convert your images into a PDF easily",
+choose:"Choose Files",
+noFiles:"No files selected",
+files:"file(s) selected",
+convert:"Convert Images to PDF",
+download:"Your PDF has been created.",
+privacy:"Your files are processed in your browser. They are not uploaded to a server.",
+remove:"Remove",
+processing:"Creating PDF..."
+},
 
-      preview.innerHTML = "";
-      message.innerHTML = "";
+ur:{
+title:"پی ڈی ایف کنورٹر",
+subtitle:"اپنی تصاویر کو آسانی سے PDF میں تبدیل کریں",
+choose:"فائلیں منتخب کریں",
+noFiles:"کوئی فائل منتخب نہیں کی گئی",
+files:"فائلیں منتخب کی گئی ہیں",
+convert:"تصاویر کو PDF میں تبدیل کریں",
+download:"آپ کی PDF تیار ہو گئی ہے۔",
+privacy:"آپ کی فائلیں اسی براؤزر میں پروسیس ہوتی ہیں۔ سرور پر اپ لوڈ نہیں ہوتیں۔",
+remove:"حذف کریں",
+processing:"PDF بنائی جا رہی ہے..."
+},
 
-      if (selectedImages.length === 0) {
-        convertBtn.disabled = true;
-        return;
-      }
+ar:{
+title:"محول PDF",
+subtitle:"حوّل صورك إلى ملف PDF بسهولة",
+choose:"اختر الملفات",
+noFiles:"لم يتم اختيار أي ملفات",
+files:"ملفات تم اختيارها",
+convert:"تحويل الصور إلى PDF",
+download:"تم إنشاء ملف PDF الخاص بك.",
+privacy:"تتم معالجة ملفاتك داخل المتصفح ولا يتم رفعها إلى أي خادم.",
+remove:"حذف",
+processing:"جاري إنشاء ملف PDF..."
+}
 
-      selectedImages.forEach(file => {
+};
 
-        const reader = new FileReader();
+let currentLanguage="en";
+let files=[];
 
-        reader.onload = function(e) {
+const fileInput=document.getElementById("fileInput");
+const preview=document.getElementById("preview");
+const convertBtn=document.getElementById("convertBtn");
+const fileInfo=document.getElementById("fileInfo");
+const statusBox=document.getElementById("status");
 
-          const img = document.createElement("img");
+fileInput.addEventListener("change",function(){
+    files=[...fileInput.files];
+    showPreview();
+});
 
-          img.src = e.target.result;
-          img.className = "preview-img";
+function changeLanguage(){
 
-          preview.appendChild(img);
+    currentLanguage=document.getElementById("language").value;
+
+    const t=translations[currentLanguage];
+
+    document.documentElement.lang=currentLanguage;
+    document.documentElement.dir=
+        currentLanguage==="en" ? "ltr" : "rtl";
+
+    document.getElementById("title").textContent=t.title;
+    document.getElementById("subtitle").textContent=t.subtitle;
+    document.getElementById("chooseText").textContent=t.choose;
+    document.getElementById("convertBtn").textContent=t.convert;
+    document.getElementById("privacy").textContent=t.privacy;
+
+    updateFileInfo();
+    showPreview();
+}
+
+function updateFileInfo(){
+
+    const t=translations[currentLanguage];
+
+    if(files.length===0){
+        fileInfo.textContent=t.noFiles;
+    }else{
+        fileInfo.textContent=
+            files.length+" "+t.files;
+    }
+}
+
+function showPreview(){
+
+    preview.innerHTML="";
+    updateFileInfo();
+
+    const t=translations[currentLanguage];
+
+    files.forEach((file,index)=>{
+
+        const item=document.createElement("div");
+        item.className="preview-item";
+
+        const img=document.createElement("img");
+
+        const reader=new FileReader();
+
+        reader.onload=function(e){
+            img.src=e.target.result;
         };
 
         reader.readAsDataURL(file);
 
-      });
+        const name=document.createElement("div");
+        name.className="preview-name";
+        name.textContent=(index+1)+". "+file.name;
 
-      convertBtn.disabled = false;
+        const remove=document.createElement("button");
+        remove.className="remove";
+        remove.textContent=t.remove;
+
+        remove.onclick=function(){
+            files.splice(index,1);
+            showPreview();
+        };
+
+        item.appendChild(img);
+        item.appendChild(name);
+        item.appendChild(remove);
+
+        preview.appendChild(item);
     });
 
+    convertBtn.disabled=files.length===0;
+}
 
-    convertBtn.addEventListener("click", async function () {
+function readImage(file){
 
-      if (selectedImages.length === 0) return;
+    return new Promise((resolve,reject)=>{
 
-      convertBtn.disabled = true;
-      convertBtn.textContent = "Creating PDF...";
+        const reader=new FileReader();
 
-      const { jsPDF } = window.jspdf;
+        reader.onload=function(e){
 
-      const pdf = new jsPDF();
+            const img=new Image();
 
-      for (let i = 0; i < selectedImages.length; i++) {
+            img.onload=function(){
+                resolve(img);
+            };
 
-        const file = selectedImages[i];
+            img.onerror=reject;
+            img.src=e.target.result;
+        };
 
-        const imageData = await readFile(file);
+        reader.onerror=reject;
+        reader.readAsDataURL(file);
+    });
+}
 
-        const img = new Image();
+async function makePDF(){
 
-        img.src = imageData;
+    if(files.length===0)return;
 
-        await new Promise(resolve => {
-          img.onload = resolve;
-        });
+    const t=translations[currentLanguage];
 
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
+    convertBtn.disabled=true;
+    statusBox.textContent=t.processing;
 
-        const margin = 10;
+    try{
 
-        const availableWidth = pageWidth - margin * 2;
-        const availableHeight = pageHeight - margin * 2;
+        const {jsPDF}=window.jspdf;
 
-        let width = img.width;
-        let height = img.height;
+        let pdf=null;
 
-        const ratio = Math.min(
-          availableWidth / width,
-          availableHeight / height
-        );
+        for(let i=0;i<files.length;i++){
 
-        width = width * ratio;
-        height = height * ratio;
+            const img=await readImage(files[i]);
 
-        const x = (pageWidth - width) / 2;
-        const y = (pageHeight - height) / 2;
+            let orientation =
+                img.width > img.height ? "landscape" : "portrait";
 
-        if (i > 0) {
-          pdf.addPage();
+            if(i===0){
+
+                pdf=new jsPDF({
+                    orientation:orientation,
+                    unit:"mm",
+                    format:"a4"
+                });
+
+            }else{
+
+                pdf.addPage(
+                    "a4",
+                    orientation
+                );
+            }
+
+            const pageWidth =
+                orientation==="landscape" ? 297 : 210;
+
+            const pageHeight =
+                orientation==="landscape" ? 210 : 297;
+
+            const margin=8;
+
+            const maxWidth=pageWidth-(margin*2);
+            const maxHeight=pageHeight-(margin*2);
+
+            let width=maxWidth;
+            let height=(img.height/img.width)*width;
+
+            if(height>maxHeight){
+
+                height=maxHeight;
+                width=(img.width/img.height)*height;
+            }
+
+            const x=(pageWidth-width)/2;
+            const y=(pageHeight-height)/2;
+
+            pdf.addImage(
+                img,
+                "JPEG",
+                x,
+                y,
+                width,
+                height
+            );
         }
 
-        pdf.addImage(
-          imageData,
-          "JPEG",
-          x,
-          y,
-          width,
-          height
-        );
-      }
+        pdf.save("converted-images.pdf");
 
-      pdf.save("converted-images.pdf");
+        statusBox.textContent="✅ "+t.download;
 
-      convertBtn.disabled = false;
-      convertBtn.textContent = "Convert Images to PDF";
+    }catch(error){
 
-      message.innerHTML =
-        '<div class="success">✅ PDF created successfully!</div>';
-    });
+        statusBox.textContent=
+            "❌ Error: "+error.message;
 
+    }finally{
 
-    function readFile(file) {
-
-      return new Promise((resolve, reject) => {
-
-        const reader = new FileReader();
-
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-
-        reader.readAsDataURL(file);
-      });
+        convertBtn.disabled=false;
     }
-  </script>
+}
+
+changeLanguage();
+</script>
 
 </body>
 </html>
